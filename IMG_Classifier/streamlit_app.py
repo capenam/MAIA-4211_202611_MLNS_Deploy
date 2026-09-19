@@ -19,18 +19,6 @@ st.write("Ingresa un texto o propuesta ciudadana para identificar su relación s
 
 user_text = st.text_area("Ingresa la propuesta ciudadana:", height=150)
 
-#if st.button("🔍 Clasificar ODS", type="primary"): 
-#    if user_text.strip():
-#        ods_pred = model_controller.predict(user_text)
-#        info = preprocessor.get_ods_info(ods_pred)
-#
-#    st.markdown(f"""
-#    <div style="background-color: {info['color']}; padding: 20px; border-radius: 10px; 
-#        <h2>{info['icono']} ODS {ods_pred}: {info['nombre']}</h2>
-#    </div>
-#    """, unsafe_allow_html=True)
-#else:  
-#    st.warning("Ingresa un texto antes de clasificar.")
 
 if st.button("🔍 Clasificar ODS", type="primary"):
     if user_text.strip():
