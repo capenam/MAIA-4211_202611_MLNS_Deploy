@@ -17,7 +17,7 @@ preprocessor = DataPreprocessing()
 st.title("🌱 Clasificador de Propuestas en línea con los ODS (Agenda 2030)")
 st.write("Ingresa un texto o propuesta para identificar su relación semántica con los Objetivos de Desarrollo Sostenible (ODS).")
 
-user_text = st.text_area("Ingresa la propuesta ciudadana:", height=150)
+user_text = st.text_area("Ingresa aquí tu propuesta:", height=150)
 
 
 if st.button("🔍 Clasificar ODS", type="primary"):
