@@ -1,64 +1,56 @@
-#  We ensure proper path handling in Python
-import Definitions
-import pandas as pd
-import matplotlib.pyplot as plt
 import streamlit as st
+import sys
+import os
+st.set_page_config(page_title="Clasificador ODS", page_icon="🌱", layout="wide")
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from src.ModelController import ModelController
+from src.DataPreprocessing import DataPreprocessing
 
-### Setup and configuration
+@st.cache_resource
+def load_controller():
+     return ModelController()
 
-st.set_page_config(
-    layout="centered", page_title="Image Classifier", page_icon="❄️"
-)
+model_controller = load_controller()
+preprocessor = DataPreprocessing()
 
-### My vars
+st.title("🌱 Clasificador de Opiniones Ciudadanas según ODS (Agenda 2030)")
+st.write("Ingresa un texto o propuesta ciudadana para identificar su relación semántica con los ODS [1, 2].")
 
-ctrl = ModelController()
+user_text = st.text_area("Ingresa la propuesta ciudadana:", height=150)
 
-### My UI starting here
+#if st.button("🔍 Clasificar ODS", type="primary"): 
+#    if user_text.strip():
+#        ods_pred = model_controller.predict(user_text)
+#        info = preprocessor.get_ods_info(ods_pred)
+#
+#    st.markdown(f"""
+#    <div style="background-color: {info['color']}; padding: 20px; border-radius: 10px; 
+#        <h2>{info['icono']} ODS {ods_pred}: {info['nombre']}</h2>
+#    </div>
+#    """, unsafe_allow_html=True)
+#else: 
+#    st.warning("Ingresa un texto antes de clasificar.")
 
-with st.form(key="my_form"):
+if st.button("🔍 Clasificar ODS", type="primary"):
+    if user_text.strip():
+        # 1. Obtenemos el resultado de la predicción
+        pred = model_controller.predict(user_text)
+        
+        # Extraemos el valor del arreglo/lista si es necesario
+        ods_pred = pred[0] if hasattr(pred, "__getitem__") else pred
+        
+        # Convertimos a entero para buscar en el diccionario de ODS
+        ods_key = int(ods_pred)
+        
+        # 2. Obtenemos la información de la clase
+        info = preprocessor.get_ods_info(ods_key)
 
-    uploaded_file = st.file_uploader(
-        "Choose a CSV file", accept_multiple_files=False, type="csv"
-    )
-
-    submit_button = st.form_submit_button(label="Submit")
-
-if submit_button and uploaded_file is not None:
-    input_df, is_valid = ctrl.load_input_data(uploaded_file)
-    st.session_state["input_df"] = input_df if is_valid else None
-
-input_df = st.session_state.get("input_df")
-
-if input_df is not None:
-    st.caption("✅ This is your data")
-    event = st.dataframe(
-        input_df,
-        on_select="rerun",
-        selection_mode="single-row",
-        use_container_width=True,
-    )
-    st.caption("▶ Please select a row")
-
-    if event is not None and event.selection.rows:        
-        current_row_index = event.selection.rows[0]
-        current_row = input_df.iloc[current_row_index]
-
-        #TO-DO: Llama la clase de predicción para procesar la información
-        X, Y, Y_pred = None
-        #TO-DO: Obten el nombre de las clases
-        class_names = None
-
-        col1, col2 = st.columns([1, 2])  
-
-        with col1:
-            st.caption("🗣 Your Prediction")
-            #TO-DO
-
-        with col2:
-            st.caption("🎯 Your results")
-            #TO-DO
-            st.metric("Real", "<Insert Value>")
-            st.metric("Prediction", "<Insert Value>")
+        # 3. Renderizamos el resultado
+        st.markdown(f"""
+        <div style="background-color: {info.get('color', '#1F2937')}; padding: 20px; border-radius: 10px; color: white;">
+            <h2>{info.get('icono', '🌱')} ODS {ods_key}: {info.get('nombre', 'Clasificado')}</h2>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.warning("Ingresa un texto antes de clasificar.")
