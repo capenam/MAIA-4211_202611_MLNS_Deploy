@@ -29,7 +29,7 @@ user_text = st.text_area("Ingresa la propuesta ciudadana:", height=150)
 #        <h2>{info['icono']} ODS {ods_pred}: {info['nombre']}</h2>
 #    </div>
 #    """, unsafe_allow_html=True)
-#else: 
+#else:  
 #    st.warning("Ingresa un texto antes de clasificar.")
 
 if st.button("🔍 Clasificar ODS", type="primary"):
